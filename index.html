@@ -3,118 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FaceNameTrainer - 顔と名前の記憶トレーニング</title>
+    <title>FaceNameTrainer - 顔と名前の記憶トレーニングアプリ</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="app-container">
-        <header>
-            <h1>FaceNameTrainer</h1>
-            <p class="tagline">AIで生成された顔と名前を覚えて記憶力を鍛えよう</p>
-        </header>
+    <header>
+        <h1>FaceNameTrainer</h1>
+        <p>顔と名前の記憶力を鍛えるトレーニングアプリ</p>
+    </header>
 
-        <main>
-            <!-- 初期画面 -->
-            <section id="welcome-screen" class="screen active">
-                <h2>ようこそ</h2>
-                <p>顔と名前の記憶力を鍛えるトレーニングアプリです。</p>
-                <p>AIが生成した顔写真と名前を覚えて、テストに挑戦しましょう。</p>
-                
-                <!-- 国・地域選択セクション -->
-                <div class="region-selector">
-                    <h3>トレーニングする国・地域を選択してください</h3>
-                    <div class="region-options">
-                        <button id="japan-region" class="region-btn selected">日本</button>
-                        <button id="usa-region" class="region-btn">アメリカ</button>
-                        <button id="europe-region" class="region-btn">ヨーロッパ</button>
-                        <button id="asia-region" class="region-btn">アジア（日本除く）</button>
-                        <button id="mixed-region" class="region-btn">ミックス</button>
-                    </div>
+    <main>
+        <section id="setup-section" class="active-section">
+            <h2>トレーニング設定</h2>
+            
+            <div class="option-group">
+                <h3>国・地域の選択</h3>
+                <div class="option-buttons">
+                    <button class="option-button" data-region="japan">日本</button>
+                    <button class="option-button" data-region="usa">アメリカ</button>
+                    <button class="option-button" data-region="europe">ヨーロッパ</button>
+                    <button class="option-button" data-region="asia">アジア</button>
                 </div>
-                
-                <div class="difficulty-selector">
-                    <h3>難易度を選択してください</h3>
-                    <div class="difficulty-options">
-                        <button id="easy-mode" class="difficulty-btn">初級 (5人)</button>
-                        <button id="medium-mode" class="difficulty-btn">中級 (10人)</button>
-                        <button id="hard-mode" class="difficulty-btn">上級 (15人)</button>
-                    </div>
-                </div>
-                
-                <button id="start-training" class="primary-btn">トレーニング開始</button>
-            </section>
+            </div>
 
-            <!-- 学習画面 -->
-            <section id="learning-screen" class="screen">
-                <h2>学習モード <span id="current-region" class="region-tag">日本</span></h2>
-                <p class="screen-description">以下の顔と名前を覚えてください。</p>
-                <div class="timer-container">
-                    <span>残り時間: </span>
-                    <span id="timer">60</span>
-                    <span>秒</span>
+            <div class="option-group">
+                <h3>難易度設定</h3>
+                <div class="option-buttons">
+                    <button class="option-button" data-difficulty="easy">初級 (5人)</button>
+                    <button class="option-button" data-difficulty="medium">中級 (10人)</button>
+                    <button class="option-button" data-difficulty="hard">上級 (15人)</button>
                 </div>
-                
-                <div id="faces-container" class="faces-grid"></div>
-                
-                <button id="ready-for-test" class="primary-btn">テスト開始</button>
-            </section>
+            </div>
 
-            <!-- テスト画面 -->
-            <section id="test-screen" class="screen">
-                <h2>テストモード <span id="test-region" class="region-tag">日本</span></h2>
-                <p class="screen-description">表示された顔の名前を選んでください。</p>
-                <div class="test-progress">
-                    <span id="question-counter">1</span> / <span id="total-questions">5</span>
-                </div>
-                
-                <div class="test-question">
-                    <div id="test-face" class="test-face-container">
-                        <!-- テスト対象の顔がここに表示される -->
-                    </div>
-                    
-                    <div class="name-selection">
-                        <label for="name-input">この人の名前は？</label>
-                        <select id="name-input" class="name-dropdown">
-                            <!-- 名前の選択肢がここに表示される -->
-                        </select>
-                        <button id="submit-answer" class="primary-btn">回答する</button>
-                    </div>
-                </div>
-            </section>
+            <button id="start-training" class="primary-button">トレーニング開始</button>
+        </section>
 
-            <!-- 結果画面 -->
-            <section id="results-screen" class="screen">
-                <h2>テスト結果 <span id="results-region" class="region-tag">日本</span></h2>
-                
-                <div class="score-display">
-                    <div class="score-circle">
-                        <span id="score-percentage">0%</span>
-                    </div>
-                    <p>正解： <span id="correct-answers">0</span> / <span id="total-answers">0</span></p>
-                </div>
-                
-                <div id="results-details" class="results-details">
-                    <!-- 詳細な結果がここに表示される -->
-                </div>
-                
-                <div class="action-buttons">
-                    <button id="retry-training" class="primary-btn">もう一度挑戦</button>
-                    <button id="back-to-welcome" class="secondary-btn">トップに戻る</button>
-                </div>
-            </section>
-        </main>
+        <section id="learning-section" class="hidden-section">
+            <h2>学習モード</h2>
+            <div class="timer-bar">
+                <div class="timer-progress"></div>
+            </div>
+            <p>以下の顔と名前を覚えてください</p>
+            
+            <div id="faces-container"></div>
+            
+            <div class="controls">
+                <span id="progress-indicator">0 / 0</span>
+                <button id="next-face" class="primary-button">次へ</button>
+                <button id="finish-learning" class="secondary-button">学習終了</button>
+            </div>
+        </section>
 
-        <footer>
-            <p>&copy; 2025 FaceNameTrainer - 顔と名前の記憶トレーニングアプリ</p>
-            <p class="disclaimer">※顔画像はAIによって生成されたもので、実在の人物ではありません。</p>
-        </footer>
-    </div>
+        <section id="test-section" class="hidden-section">
+            <h2>テストモード</h2>
+            <div class="face-display">
+                <img id="test-face" src="" alt="顔写真">
+                <div class="name-input-container">
+                    <input type="text" id="name-input" placeholder="名前を入力してください">
+                    <button id="submit-answer" class="primary-button">回答</button>
+                </div>
+            </div>
+            
+            <div class="result-feedback hidden">
+                <p class="result-message"></p>
+                <p class="correct-answer"></p>
+            </div>
+            
+            <div class="controls">
+                <span id="test-progress">0 / 0</span>
+                <button id="next-test" class="primary-button">次へ</button>
+            </div>
+        </section>
 
-    <!-- スクリプト -->
+        <section id="results-section" class="hidden-section">
+            <h2>結果</h2>
+            <div class="score-display">
+                <div class="score-circle">
+                    <span id="score-percentage">0%</span>
+                </div>
+                <p>正解率</p>
+            </div>
+            
+            <div class="results-details">
+                <h3>詳細結果</h3>
+                <div id="results-list"></div>
+            </div>
+            
+            <div class="action-buttons">
+                <button id="retry-test" class="primary-button">もう一度テスト</button>
+                <button id="new-training" class="secondary-button">新しいトレーニング</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>FaceNameTrainer - 記憶力向上のための教育アプリ</p>
+    </footer>
+
     <script src="scripts/names.js"></script>
-    <script src="scripts/face-api.js"></script> 
+    <script src="scripts/face-api.js"></script>
     <script src="scripts/storage.js"></script>
     <script src="scripts/app.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
