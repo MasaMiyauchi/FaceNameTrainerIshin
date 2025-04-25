@@ -3,31 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>シンプル足し算アプリケーション</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>FaceNamer - 顔と名前の記憶トレーニングアプリ</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <h1>シンプル足し算アプリケーション</h1>
-        <div class="calculator">
-            <div class="input-group">
-                <label for="number1">1つ目の数値：</label>
-                <input type="number" id="number1" placeholder="最初の数値を入力">
-            </div>
-            <div class="input-group">
-                <label for="number2">2つ目の数値：</label>
-                <input type="number" id="number2" placeholder="2つ目の数値を入力">
-            </div>
-            <button id="calculate-button">計算</button>
-            <div class="result-container">
-                <h2>計算結果：</h2>
-                <div id="result">-</div>
-            </div>
-        </div>
+    <div class="app-container">
+        <header>
+            <h1>FaceNamer</h1>
+            <p class="subtitle">顔と名前の記憶トレーニングアプリ</p>
+        </header>
+
+        <main>
+            <!-- モード選択画面 -->
+            <section id="mode-selection" class="screen active">
+                <h2>トレーニングモードを選択</h2>
+                <div class="difficulty-selection">
+                    <h3>難易度レベル</h3>
+                    <div class="difficulty-buttons">
+                        <button id="easy-mode" class="difficulty-btn">初級 (5人)</button>
+                        <button id="medium-mode" class="difficulty-btn">中級 (10人)</button>
+                        <button id="hard-mode" class="difficulty-btn">上級 (15人)</button>
+                    </div>
+                </div>
+                <button id="start-learning" class="primary-btn">学習を開始</button>
+            </section>
+
+            <!-- 学習モード画面 -->
+            <section id="learning-mode" class="screen">
+                <div class="mode-header">
+                    <h2>学習モード</h2>
+                    <div class="progress-indicator">
+                        <span id="current-person">1</span>/<span id="total-people">5</span>
+                    </div>
+                </div>
+                <div class="face-card">
+                    <div id="face-image" class="face-image">
+                        <div class="loading-spinner"></div>
+                    </div>
+                    <div class="person-name">
+                        <h3 id="person-name">名前を読み込み中...</h3>
+                    </div>
+                </div>
+                <div class="navigation-buttons">
+                    <button id="prev-person" class="nav-btn" disabled>前へ</button>
+                    <button id="next-person" class="nav-btn">次へ</button>
+                </div>
+                <div class="timer-container">
+                    <div class="timer-label">残り時間：</div>
+                    <div id="timer" class="timer">01:00</div>
+                </div>
+                <button id="start-test" class="primary-btn" disabled>テストを開始</button>
+            </section>
+
+            <!-- テストモード画面 -->
+            <section id="test-mode" class="screen">
+                <div class="mode-header">
+                    <h2>テストモード</h2>
+                    <div class="progress-indicator">
+                        <span id="current-test">1</span>/<span id="total-tests">5</span>
+                    </div>
+                </div>
+                <div class="face-card">
+                    <div id="test-face-image" class="face-image">
+                        <div class="loading-spinner"></div>
+                    </div>
+                    <div class="name-selection">
+                        <label for="name-select">この人の名前は？</label>
+                        <select id="name-select" class="name-select">
+                            <option value="" disabled selected>名前を選択...</option>
+                        </select>
+                    </div>
+                </div>
+                <button id="check-answer" class="primary-btn">回答を確認</button>
+            </section>
+
+            <!-- 結果画面 -->
+            <section id="results" class="screen">
+                <h2>テスト結果</h2>
+                <div class="score-container">
+                    <div class="score-circle">
+                        <span id="correct-count">0</span>/<span id="total-count">5</span>
+                    </div>
+                    <p class="score-label">正解数</p>
+                </div>
+                <div class="result-details">
+                    <h3>詳細結果</h3>
+                    <div id="result-list" class="result-list">
+                        <!-- 動的に生成される結果リスト -->
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button id="retry-test" class="secondary-btn">再テスト</button>
+                    <button id="new-practice" class="primary-btn">新しいトレーニング</button>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>© 2025 FaceNamer - 顔と名前の記憶トレーニングアプリ</p>
+            <p class="disclaimer">使用されている顔画像はAIで生成されており、実在の人物ではありません。</p>
+        </footer>
     </div>
-    <footer>
-        <p>© 2025 シンプル足し算アプリケーション</p>
-    </footer>
-    <script src="script.js"></script>
+
+    <!-- スクリプトの読み込み -->
+    <script src="scripts/nameData.js"></script>
+    <script src="scripts/faceGenerator.js"></script>
+    <script src="scripts/app.js"></script>
 </body>
 </html>
