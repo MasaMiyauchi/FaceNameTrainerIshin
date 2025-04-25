@@ -34,15 +34,32 @@
 
 ```
 face-name-trainer/
-├── index.html        # メインのHTMLファイル
-├── styles.css        # スタイルシート
+├── index.html                # メインのHTMLファイル
+├── styles.css                # スタイルシート
 ├── scripts/
-│   ├── app.js        # メインアプリケーションロジック
-│   ├── face-api.js   # 顔画像取得用API連携
-│   ├── names.js      # 各国の名前データセット
-│   └── storage.js    # 進捗保存機能
-├── assets/           # 静的アセット（アイコンなど）
-└── README.md         # このファイル
+│   ├── app.js                # メインアプリケーション初期化
+│   ├── api/
+│   │   ├── face-api.js       # 顔画像取得用API連携
+│   │   └── name-api.js       # 名前データ取得API
+│   ├── components/
+│   │   ├── ui-manager.js     # UI表示・更新管理
+│   │   ├── modal.js          # モーダル管理
+│   │   └── navigation.js     # 画面遷移管理
+│   ├── data/
+│   │   ├── names.js          # 各国の名前データセット
+│   │   └── settings.js       # アプリ設定データ
+│   ├── utils/
+│   │   ├── storage.js        # ローカルストレージ操作
+│   │   ├── timer.js          # タイマー機能
+│   │   └── helpers.js        # ユーティリティ関数
+│   ├── modules/
+│   │   ├── learning-mode.js  # 学習モードロジック
+│   │   ├── test-mode.js      # テストモードロジック
+│   │   ├── stats.js          # 統計・進捗管理
+│   │   └── difficulty.js     # 難易度設定管理
+│   └── events.js             # イベントリスナー管理
+├── assets/                   # 静的アセット（アイコンなど）
+└── README.md                 # このファイル
 ```
 
 ## カスタマイズ方法
