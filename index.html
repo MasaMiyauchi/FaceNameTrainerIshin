@@ -21,6 +21,18 @@
                 <p>顔と名前の記憶力を鍛えるトレーニングアプリです。</p>
                 <p>AIが生成した顔写真と名前を覚えて、テストに挑戦しましょう。</p>
                 
+                <!-- 国・地域選択セクション -->
+                <div class="region-selector">
+                    <h3>トレーニングする国・地域を選択してください</h3>
+                    <div class="region-options">
+                        <button id="japan-region" class="region-btn selected">日本</button>
+                        <button id="usa-region" class="region-btn">アメリカ</button>
+                        <button id="europe-region" class="region-btn">ヨーロッパ</button>
+                        <button id="asia-region" class="region-btn">アジア（日本除く）</button>
+                        <button id="mixed-region" class="region-btn">ミックス</button>
+                    </div>
+                </div>
+                
                 <div class="difficulty-selector">
                     <h3>難易度を選択してください</h3>
                     <div class="difficulty-options">
@@ -35,7 +47,7 @@
 
             <!-- 学習画面 -->
             <section id="learning-screen" class="screen">
-                <h2>学習モード</h2>
+                <h2>学習モード <span id="current-region" class="region-tag">日本</span></h2>
                 <p class="screen-description">以下の顔と名前を覚えてください。</p>
                 <div class="timer-container">
                     <span>残り時間: </span>
@@ -50,7 +62,7 @@
 
             <!-- テスト画面 -->
             <section id="test-screen" class="screen">
-                <h2>テストモード</h2>
+                <h2>テストモード <span id="test-region" class="region-tag">日本</span></h2>
                 <p class="screen-description">表示された顔の名前を選んでください。</p>
                 <div class="test-progress">
                     <span id="question-counter">1</span> / <span id="total-questions">5</span>
@@ -73,7 +85,7 @@
 
             <!-- 結果画面 -->
             <section id="results-screen" class="screen">
-                <h2>テスト結果</h2>
+                <h2>テスト結果 <span id="results-region" class="region-tag">日本</span></h2>
                 
                 <div class="score-display">
                     <div class="score-circle">
