@@ -45,9 +45,10 @@ face-name-trainer/
 │   │   ├── ui-manager.js     # UI表示・更新管理
 │   │   ├── modal.js          # モーダル管理
 │   │   └── navigation.js     # 画面遷移管理
-│   ├── data/
-│   │   ├── names.js          # 各国の名前データセット
-│   │   └── settings.js       # アプリ設定データ
+│   ├── names/                # 各国・地域別の名前データディレクトリ
+│   │   ├── README.md         # 名前データ説明
+│   │   ├── japan.js          # 日本の名前データ
+│   │   └── usa.js            # アメリカの名前データ
 │   ├── utils/
 │   │   ├── storage.js        # ローカルストレージ操作
 │   │   ├── timer.js          # タイマー機能
