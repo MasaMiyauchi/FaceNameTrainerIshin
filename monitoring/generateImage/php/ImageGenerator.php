@@ -120,6 +120,11 @@ class ImageGenerator {
                 ];
                 
                 $postFields[] = [
+                    'name' => 'prompt',
+                    'content' => $prompt
+                ];
+                
+                $postFields[] = [
                     'name' => 'text_prompts[0][text]',
                     'content' => $prompt
                 ];
