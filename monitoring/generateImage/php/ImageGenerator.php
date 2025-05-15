@@ -82,32 +82,67 @@ class ImageGenerator {
      * @return array API response data
      */
     private function callStabilityAPI($prompt, $seed) {
-        $requestData = [
-            'width' => $this->imageWidth,
-            'height' => $this->imageHeight,
-            'seed' => $seed,
-            'cfg_scale' => 7.5,
-            'samples' => 1,
-            'text_prompts' => [
-                [
-                    'text' => $prompt,
-                    'weight' => 1.0
-                ]
-            ]
-        ];
-        
         $attempts = 0;
         $maxAttempts = 3;
         $lastError = null;
         
         while ($attempts < $maxAttempts) {
             try {
+                $boundary = uniqid();
+                $delimiter = '-------------' . $boundary;
+                
+                $postFields = [];
+                
+                // Add text parameters
+                $postFields[] = [
+                    'name' => 'width',
+                    'content' => $this->imageWidth
+                ];
+                
+                $postFields[] = [
+                    'name' => 'height',
+                    'content' => $this->imageHeight
+                ];
+                
+                $postFields[] = [
+                    'name' => 'seed',
+                    'content' => $seed
+                ];
+                
+                $postFields[] = [
+                    'name' => 'cfg_scale',
+                    'content' => 7.5
+                ];
+                
+                $postFields[] = [
+                    'name' => 'samples',
+                    'content' => 1
+                ];
+                
+                $postFields[] = [
+                    'name' => 'text_prompts[0][text]',
+                    'content' => $prompt
+                ];
+                
+                $postFields[] = [
+                    'name' => 'text_prompts[0][weight]',
+                    'content' => 1.0
+                ];
+                
+                $body = '';
+                foreach ($postFields as $field) {
+                    $body .= "--" . $delimiter . "\r\n";
+                    $body .= 'Content-Disposition: form-data; name="' . $field['name'] . '"';
+                    $body .= "\r\n\r\n" . $field['content'] . "\r\n";
+                }
+                $body .= "--" . $delimiter . "--\r\n";
+                
                 $ch = curl_init($this->apiEndpoint);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($requestData));
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
                 curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                    'Content-Type: application/json',
+                    'Content-Type: multipart/form-data; boundary=' . $delimiter,
                     'Accept: application/json',
                     'Authorization: Bearer ' . $this->apiKey
                 ]);

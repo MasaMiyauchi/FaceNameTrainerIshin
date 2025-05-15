@@ -5,6 +5,7 @@
  * This script tests the image generation and monitoring functionality.
  */
 
+require_once __DIR__ . '/load_env.php';
 require_once __DIR__ . '/php/ImageGenerator.php';
 require_once __DIR__ . '/php/ImageMonitor.php';
 
