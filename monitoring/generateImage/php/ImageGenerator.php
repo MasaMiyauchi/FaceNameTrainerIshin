@@ -156,12 +156,18 @@ class ImageGenerator {
                 $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
                 curl_close($ch);
                 
+                error_log("API Response Status: " . $statusCode);
+                error_log("API Response Body: " . $response);
+                
                 if ($statusCode !== 200) {
                     $errorData = json_decode($response, true) ?: [];
                     throw new Exception("API error: {$statusCode} - " . json_encode($errorData));
                 }
                 
-                return json_decode($response, true);
+                $responseData = json_decode($response, true);
+                error_log("Decoded Response: " . json_encode($responseData));
+                
+                return $responseData;
             } catch (Exception $error) {
                 $lastError = $error;
                 $attempts++;
