@@ -194,16 +194,40 @@ class ImageGenerator {
      * @return array Processed image data and metadata
      */
     private function processAPIResponse($response, $age, $gender, $seed) {
+        error_log("Processing API response: " . json_encode($response));
+        
+        $base64Data = null;
+        $finishReason = 'SUCCESS';
+        
         if (!empty($response['base64'])) {
             $base64Data = $response['base64'];
             $finishReason = $response['finish_reason'] ?? 'SUCCESS';
+            error_log("Found base64 data in direct response");
         } 
         else if (!empty($response['artifacts']) && count($response['artifacts']) > 0) {
             $artifact = $response['artifacts'][0];
-            $base64Data = $artifact['base64'];
-            $finishReason = $artifact['finishReason'] ?? $artifact['finish_reason'] ?? 'SUCCESS';
-        } 
-        else {
+            if (isset($artifact['base64'])) {
+                $base64Data = $artifact['base64'];
+                $finishReason = $artifact['finishReason'] ?? $artifact['finish_reason'] ?? 'SUCCESS';
+                error_log("Found base64 data in artifacts array");
+            }
+        }
+        
+        if (!$base64Data) {
+            $base64Data = $this->findBase64($response);
+            if ($base64Data) {
+                error_log("Found base64 data using recursive search");
+            }
+        }
+        
+        if (!$base64Data) {
+            $base64Data = $this->findLongString($response);
+            if ($base64Data) {
+                error_log("Found potential base64 data as long string");
+            }
+        }
+        
+        if (!$base64Data) {
             throw new Exception('No image data in API response: ' . json_encode($response));
         }
         
@@ -238,17 +262,95 @@ class ImageGenerator {
      * @return string Path to saved image
      */
     private function saveImageToFileSystem($base64Data, $filename) {
-        $imageData = base64_decode($base64Data);
         $directory = dirname(__DIR__, 3) . '/assets/faces';
         
         if (!is_dir($directory)) {
-            mkdir($directory, 0755, true);
+            error_log("Creating directory: " . $directory);
+            mkdir($directory, 0777, true);
+            chmod($directory, 0777);
         }
         
+        if (strpos($base64Data, ',') !== false) {
+            $base64Data = explode(',', $base64Data)[1];
+        }
+        
+        $imageData = base64_decode($base64Data, true);
+        error_log("Base64 decode result: " . ($imageData === false ? 'Failed' : 'Success'));
+        error_log("Base64 data length: " . strlen($base64Data));
+        error_log("Decoded data length: " . ($imageData === false ? 0 : strlen($imageData)));
+        
         $filePath = $directory . '/' . $filename;
-        file_put_contents($filePath, $imageData);
+        error_log("Saving image to: " . $filePath);
+        
+        if ($imageData !== false) {
+            $result = file_put_contents($filePath, $imageData);
+            error_log("Method 1 result: " . ($result === false ? 'Failed' : 'Success (' . $result . ' bytes)'));
+            
+            if ($result === false) {
+                $fp = fopen($filePath, 'wb');
+                if ($fp) {
+                    $result = fwrite($fp, $imageData);
+                    fclose($fp);
+                    error_log("Method 2 result: " . ($result === false ? 'Failed' : 'Success (' . $result . ' bytes)'));
+                }
+            }
+        } else {
+            $debugPath = $directory . '/debug_' . $filename . '.txt';
+            file_put_contents($debugPath, $base64Data);
+            error_log("Saved raw base64 data to: " . $debugPath);
+            
+            $result = file_put_contents($filePath, $base64Data);
+            error_log("Raw data save result: " . ($result === false ? 'Failed' : 'Success (' . $result . ' bytes)'));
+        }
+        
+        error_log("File exists: " . (file_exists($filePath) ? 'Yes' : 'No'));
+        if (file_exists($filePath)) {
+            error_log("File size: " . filesize($filePath) . " bytes");
+            chmod($filePath, 0777);
+        }
         
         return 'assets/faces/' . $filename;
+    }
+    
+    /**
+     * Recursively search for base64 data in an array
+     * 
+     * @param array $array Array to search in
+     * @param string $key Key to search for
+     * @return string|null Base64 data if found, null otherwise
+     */
+    private function findBase64($array, $key = 'base64') {
+        foreach ($array as $k => $v) {
+            if ($k === $key && is_string($v) && strlen($v) > 100) {
+                return $v;
+            } else if (is_array($v)) {
+                $result = $this->findBase64($v, $key);
+                if ($result) {
+                    return $result;
+                }
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Find any long string that might be base64 encoded
+     * 
+     * @param array $array Array to search in
+     * @return string|null Base64 data if found, null otherwise
+     */
+    private function findLongString($array) {
+        foreach ($array as $k => $v) {
+            if (is_string($v) && strlen($v) > 1000 && preg_match('/^[a-zA-Z0-9\/\+\=]+$/', $v)) {
+                return $v;
+            } else if (is_array($v)) {
+                $result = $this->findLongString($v);
+                if ($result) {
+                    return $result;
+                }
+            }
+        }
+        return null;
     }
     
     /**
