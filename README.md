@@ -163,10 +163,17 @@ POST https://api.stability.ai/v2beta/stable-image/generate/core
 ### 6. 生成画像の保存・再利用
 
 1. **保存処理**  
-   - 生成後、バックエンドで受け取った Base64 文字列を JPEG/PNG に変換  
-   - ローカルストレージにアップロード  
+   - 生成後、バックエンドで受け取った Base64 文字列を JPEG に変換  
+   - ローカルストレージに保存
 
-2. **メタデータ保持**  
+2.ローカルストレージに
+ - assets/facesフォルダー内に保存
+ - file名:(parameterX)-(parameterY)-(parameterZ)-face.jpeg
+  - `parameterX`：年齢（20, 30, 40, 50, 60, 70 のいずれかをランダム選択）  
+  - `parameterY`：性別（`male` / `female` をランダム選択）
+  - `parameterZ` :10桁の乱数 
+
+3. **メタデータ保持**  
    データベースに以下の構造で保存することを想定します。  
    
    | カラム名       | 型         | 説明                   |
@@ -184,7 +191,7 @@ POST https://api.stability.ai/v2beta/stable-image/generate/core
 
 　- 生成時の人種パラメータ:japanese
 
-3. **キャッシュ機構**  
+4. **キャッシュ機構**  
    - 同一プロンプト＆同一シードの場合は新規生成を避け、既存のレコードを返却  
 
 ---
