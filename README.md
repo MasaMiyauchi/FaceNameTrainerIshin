@@ -106,19 +106,19 @@ AI生成された顔画像とランダムに生成された名前を使用して
       - 60代:10%
       - 70代:5%
 
-  >生成画像の特性に合わせ年齢比率を考慮した
+      >生成画像の特性に合わせ年齢比率を考慮した
 
    2. 性別の発生比率は下記とする  
-  - 男性:50%
-  - 女性:50%
+     - 男性:50%
+     - 女性:50%
 
 3. 年齢、性別に則して、ランダムに氏名の決定する  
-   1. 氏(family name)は下記ファイルより、ランダムに選定
-   assets/names/familyNames.txt
-   2. 名（given name）は下記ファイルより、ランダムに選定
-   assets/names/`parameterX`-`parameterY`-Names.txt
-     - `parameterX`：人物画像を生成するする際に決めた年代
-     - `parameterY`：人物画像を生成するする際に決めた性別
+   1. 氏(family name)は下記ファイルより、ランダムに選定  
+   assets/names/familyNames.txt  
+   2. 名（given name）は下記ファイルより、ランダムに選定  
+   assets/names/`parameterX`-`parameterY`-Names.txt  
+       - `parameterX`：人物画像を生成するする際に決めた年代
+       - `parameterY`：人物画像を生成するする際に決めた性別
 
 4. 生成画像、年代、性別、氏名の保存  
 
