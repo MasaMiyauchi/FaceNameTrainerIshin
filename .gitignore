@@ -1,1 +1,7 @@
 .env
+
+# Generated images
+assets/faces/*
+
+# Database files
+data/monitoring.db
