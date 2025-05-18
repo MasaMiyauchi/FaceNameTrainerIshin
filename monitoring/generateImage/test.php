@@ -64,7 +64,10 @@ if (!empty($missingExtensions)) {
     
     echo "<h2>インストール方法</h2>";
     echo "<h3>Ubuntu/Debian系:</h3>";
-    echo "<pre>sudo apt-get update\nsudo apt-get install php-sqlite3 php-pdo</pre>";
+    echo "<pre>sudo apt-get update\nsudo apt-get install php-sqlite3</pre>";
+    echo "<p>注: PDOはPHPのコアモジュールの一部として提供されています。特定のバージョンを使用している場合は、以下のようにインストールしてください：</p>";
+    echo "<pre>sudo apt-get install php-sqlite3 php8.1-common</pre>";
+    echo "<p>（8.1の部分は、使用しているPHPのバージョンに合わせて変更してください）</p>";
     
     echo "<h3>CentOS/RHEL系:</h3>";
     echo "<pre>sudo yum install php-pdo php-sqlite</pre>";
