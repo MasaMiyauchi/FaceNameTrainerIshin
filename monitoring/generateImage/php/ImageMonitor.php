@@ -33,20 +33,31 @@ class ImageMonitor {
             mkdir($dbDir, 0755, true);
         }
         
-        $this->db = new PDO('sqlite:' . $dbPath);
-        $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        
-        $this->db->exec('
-            CREATE TABLE IF NOT EXISTS monitoring_data (
-                id TEXT PRIMARY KEY,
-                timestamp TEXT,
-                request_params TEXT,
-                performance TEXT,
-                quality TEXT,
-                errors TEXT,
-                created_at TEXT
-            )
-        ');
+        try {
+            if (!in_array('sqlite', PDO::getAvailableDrivers())) {
+                error_log('SQLite PDO driver not available. Using fallback storage.');
+                $this->db = null;
+                return;
+            }
+            
+            $this->db = new PDO('sqlite:' . $dbPath);
+            $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            
+            $this->db->exec('
+                CREATE TABLE IF NOT EXISTS monitoring_data (
+                    id TEXT PRIMARY KEY,
+                    timestamp TEXT,
+                    request_params TEXT,
+                    performance TEXT,
+                    quality TEXT,
+                    errors TEXT,
+                    created_at TEXT
+                )
+            ');
+        } catch (Exception $e) {
+            error_log('Database initialization error: ' . $e->getMessage());
+            $this->db = null;
+        }
     }
     
     /**
@@ -128,6 +139,11 @@ class ImageMonitor {
      * @param array $monitoringData Monitoring data to save
      */
     private function saveMonitoringData($monitoringData) {
+        if ($this->db === null) {
+            $this->saveMonitoringDataToFile($monitoringData);
+            return;
+        }
+        
         try {
             $stmt = $this->db->prepare('
                 INSERT INTO monitoring_data 
@@ -148,6 +164,29 @@ class ImageMonitor {
             error_log("Saved monitoring data: {$monitoringData['id']}");
         } catch (Exception $error) {
             error_log('Error saving monitoring data: ' . $error->getMessage());
+            $this->saveMonitoringDataToFile($monitoringData);
+        }
+    }
+    
+    /**
+     * Save monitoring data to a JSON file as fallback
+     * 
+     * @param array $monitoringData Monitoring data to save
+     */
+    private function saveMonitoringDataToFile($monitoringData) {
+        try {
+            $dataDir = dirname(__DIR__, 3) . '/data/fallback';
+            if (!is_dir($dataDir)) {
+                mkdir($dataDir, 0755, true);
+            }
+            
+            $filename = $dataDir . '/' . $monitoringData['id'] . '.json';
+            $jsonData = json_encode($monitoringData, JSON_PRETTY_PRINT);
+            
+            file_put_contents($filename, $jsonData);
+            error_log("Saved monitoring data to file: {$filename}");
+        } catch (Exception $error) {
+            error_log('Error saving monitoring data to file: ' . $error->getMessage());
         }
     }
     
