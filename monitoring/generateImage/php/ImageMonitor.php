@@ -30,23 +30,116 @@ class ImageMonitor {
     private function initializeDatabase($dbPath) {
         $dbDir = dirname($dbPath);
         if (!is_dir($dbDir)) {
-            mkdir($dbDir, 0755, true);
+            try {
+                if (!mkdir($dbDir, 0755, true)) {
+                    throw new Exception("ディレクトリの作成に失敗しました: {$dbDir}");
+                }
+            } catch (Exception $e) {
+                $errorMessage = $e->getMessage();
+                $webServerUser = $this->getWebServerUser();
+                $currentUser = $this->getCurrentUser();
+                
+                if (strpos($errorMessage, 'Permission denied') !== false) {
+                    throw new Exception(
+                        "ディレクトリ作成時の権限エラー: {$dbDir}\n" .
+                        "現在の実行ユーザー: {$currentUser}\n" .
+                        "Webサーバーユーザー: {$webServerUser}\n" .
+                        "このエラーはデータディレクトリへの書き込み権限がないために発生しています。\n" .
+                        "以下のコマンドを実行して権限を修正してください:\n\n" .
+                        "sudo mkdir -p {$dbDir}\n" .
+                        "sudo chown {$webServerUser}:{$webServerUser} {$dbDir}\n" .
+                        "sudo chmod 755 {$dbDir}"
+                    );
+                } else {
+                    throw new Exception(
+                        "ディレクトリ作成エラー: {$dbDir}\n" .
+                        "エラー詳細: {$errorMessage}\n" .
+                        "以下のコマンドを実行してディレクトリを手動で作成してください:\n\n" .
+                        "sudo mkdir -p {$dbDir}\n" .
+                        "sudo chown {$webServerUser}:{$webServerUser} {$dbDir}\n" .
+                        "sudo chmod 755 {$dbDir}"
+                    );
+                }
+            }
         }
         
-        $this->db = new PDO('sqlite:' . $dbPath);
-        $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        try {
+            $this->db = new PDO('sqlite:' . $dbPath);
+            $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            
+            $this->db->exec('
+                CREATE TABLE IF NOT EXISTS monitoring_data (
+                    id TEXT PRIMARY KEY,
+                    timestamp TEXT,
+                    request_params TEXT,
+                    performance TEXT,
+                    quality TEXT,
+                    errors TEXT,
+                    created_at TEXT
+                )
+            ');
+        } catch (PDOException $e) {
+            $errorMessage = $e->getMessage();
+            $webServerUser = $this->getWebServerUser();
+            
+            if (strpos($errorMessage, 'unable to open database file') !== false) {
+                throw new Exception(
+                    "データベースファイルを開けません: {$dbPath}\n" .
+                    "このエラーはデータベースファイルへの書き込み権限がないために発生しています。\n" .
+                    "以下のコマンドを実行して権限を修正してください:\n\n" .
+                    "sudo touch {$dbPath}\n" .
+                    "sudo chown {$webServerUser}:{$webServerUser} {$dbPath}\n" .
+                    "sudo chmod 644 {$dbPath}"
+                );
+            } else {
+                throw new Exception(
+                    "データベース初期化エラー: {$errorMessage}\n" .
+                    "SQLiteデータベースドライバが正しくインストールされているか確認してください。"
+                );
+            }
+        }
+    }
+    
+    /**
+     * Get the current web server user
+     * 
+     * @return string Web server user
+     */
+    private function getWebServerUser() {
+        if (function_exists('posix_getpwuid') && function_exists('posix_geteuid')) {
+            $user = posix_getpwuid(posix_geteuid());
+            return $user['name'] ?? 'unknown';
+        }
         
-        $this->db->exec('
-            CREATE TABLE IF NOT EXISTS monitoring_data (
-                id TEXT PRIMARY KEY,
-                timestamp TEXT,
-                request_params TEXT,
-                performance TEXT,
-                quality TEXT,
-                errors TEXT,
-                created_at TEXT
-            )
-        ');
+        if (PHP_OS === 'Linux') {
+            return 'www-data'; // Debian/Ubuntu default
+        } elseif (PHP_OS === 'Darwin') {
+            return '_www'; // macOS default
+        } elseif (strpos(PHP_OS, 'WIN') === 0) {
+            return 'IUSR'; // Windows IIS default
+        }
+        
+        return 'www-data'; // Default fallback
+    }
+    
+    /**
+     * Get the current user running the script
+     * 
+     * @return string Current user
+     */
+    private function getCurrentUser() {
+        if (function_exists('posix_getpwuid') && function_exists('posix_geteuid')) {
+            $user = posix_getpwuid(posix_geteuid());
+            return $user['name'] ?? 'unknown';
+        }
+        
+        if (isset($_SERVER['USER'])) {
+            return $_SERVER['USER'];
+        } elseif (isset($_SERVER['USERNAME'])) {
+            return $_SERVER['USERNAME'];
+        }
+        
+        return 'unknown';
     }
     
     /**
