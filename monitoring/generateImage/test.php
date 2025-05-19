@@ -195,11 +195,11 @@ try {
             strpos($errorMsg, 'Permission denied') !== false && strpos($errorMsg, 'mkdir') !== false) {
             
             echo "<h2>ディレクトリ権限エラーの詳細</h2>";
-            echo "<pre>" . htmlspecialchars($errorMsg) . "</pre>";
+            echo "<pre>" . htmlspecialchars($errorMsg) . "</pre><br>";
             
             echo "<h2>エラーの原因</h2>";
-            echo "<p>このエラーはWebサーバーがデータディレクトリを作成する権限がないために発生しています。</p>";
-            echo "<p>Webサーバー（Apache/Nginxなど）は通常、制限された権限で実行されており、システムディレクトリに書き込むことができません。</p>";
+            echo "<p>このエラーはWebサーバーがデータディレクトリを作成する権限がないために発生しています。</p><br>";
+            echo "<p>Webサーバー（Apache/Nginxなど）は通常、制限された権限で実行されており、システムディレクトリに書き込むことができません。</p><br>";
             
             echo "<h2>解決方法</h2>";
             echo "<ol>";
@@ -216,23 +216,23 @@ try {
             strpos($errorMsg, 'unable to open database file') !== false) {
             
             echo "<h2>データベース接続エラーの詳細</h2>";
-            echo "<pre>" . htmlspecialchars($errorMsg) . "</pre>";
+            echo "<pre>" . htmlspecialchars($errorMsg) . "</pre><br>";
             
             if (!strpos($errorMsg, 'データベースファイルを開けません')) {
                 echo "<h2>解決方法</h2>";
-                echo "<p>1. データディレクトリの権限を確認してください：</p>";
-                echo "<pre>sudo mkdir -p " . htmlspecialchars(dirname(__DIR__, 2) . '/data') . "\n";
-                echo "sudo chown www-data:www-data " . htmlspecialchars(dirname(__DIR__, 2) . '/data') . "\n";
-                echo "sudo chmod 755 " . htmlspecialchars(dirname(__DIR__, 2) . '/data') . "</pre>";
+                echo "<p>1. データディレクトリの権限を確認してください：</p><br>";
+                echo "<pre>sudo mkdir -p " . htmlspecialchars(dirname(__DIR__, 2) . '/data') . "<br>\n";
+                echo "sudo chown www-data:www-data " . htmlspecialchars(dirname(__DIR__, 2) . '/data') . "<br>\n";
+                echo "sudo chmod 755 " . htmlspecialchars(dirname(__DIR__, 2) . '/data') . "</pre><br>";
                 
-                echo "<p>2. Webサーバーユーザー（www-dataなど）にデータディレクトリへの書き込み権限があることを確認してください。</p>";
+                echo "<p>2. Webサーバーユーザー（www-dataなど）にデータディレクトリへの書き込み権限があることを確認してください。</p><br>";
             }
             
             exit(1);
         }
         
         echo "<h2>エラーの詳細</h2>";
-        echo "<pre>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";
+        echo "<pre>" . htmlspecialchars($e->getTraceAsString()) . "</pre><br>";
         
         exit(1);
     }
