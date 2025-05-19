@@ -17,7 +17,7 @@ class ImageMonitor {
         if ($db) {
             $this->db = $db;
         } else {
-            $dbPath = dirname(__DIR__, 3) . '/data/monitoring.db';
+            $dbPath = dirname(__DIR__, 3) . '/assets/data/monitoring.db';
             $this->initializeDatabase($dbPath);
         }
     }
