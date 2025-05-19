@@ -81,35 +81,62 @@ if (!empty($missingExtensions)) {
     echo "<p>コメントを解除後：</p>";
     echo "<pre>extension=pdo_sqlite\nextension=sqlite3</pre>";
     
-    echo "<h2>インストール後の確認方法</h2>";
-    echo "<h3>1. PHPの設定情報を確認</h3>";
-    echo "<p>以下のコマンドを実行して、PHPの設定情報とロードされている拡張モジュールを確認できます：</p>";
-    echo "<pre>php -i | grep -i sqlite</pre>";
-    echo "<p>または、以下のPHPスクリプトを作成して実行することでも確認できます：</p>";
-    echo "<pre>&lt;?php phpinfo(); ?&gt;</pre>";
+    // 自動検証セクション - インストール後の確認方法を自動化
+    echo "<h2>インストール状況の自動検証</h2>";
     
-    echo "<h3>2. php.iniの場所を確認</h3>";
-    echo "<p>以下のコマンドでPHPが使用しているphp.iniファイルの場所を確認できます：</p>";
-    echo "<pre>php -i | grep 'Loaded Configuration File'</pre>";
+    // PHP バージョンの確認
+    $phpVersion = phpversion();
+    echo "<h3>1. PHPバージョン検証</h3>";
+    echo "<div style='margin-bottom: 10px;'>";
+    echo "現在のPHPバージョン: <strong>{$phpVersion}</strong>";
+    if (version_compare($phpVersion, '7.4', '>=')) {
+        echo " <span style='color: green;'>✓ 要件を満たしています</span>";
+    } else {
+        echo " <span style='color: red;'>✗ PHP 7.4以上が必要です</span>";
+    }
+    echo "</div>";
     
-    echo "<h3>3. 拡張モジュールの手動有効化</h3>";
-    echo "<p>php.iniファイルを見つけたら、以下の行が含まれていることを確認し、コメントアウトされていないことを確認してください：</p>";
-    echo "<pre>extension=pdo_sqlite\nextension=sqlite3</pre>";
-    echo "<p>行が見つからない場合は、追加してください。変更後、Webサーバーを再起動してください：</p>";
-    echo "<pre>sudo systemctl restart apache2</pre>";
-    echo "<p>または</p>";
-    echo "<pre>sudo systemctl restart nginx\nsudo systemctl restart php-fpm</pre>";
+    // 拡張モジュールの確認
+    echo "<h3>2. 拡張モジュール検証</h3>";
+    echo "<table border='1' cellpadding='5' style='border-collapse: collapse;'>";
+    echo "<tr><th>拡張モジュール</th><th>ステータス</th></tr>";
     
-    echo "<h3>4. PHPバージョンの確認</h3>";
-    echo "<p>使用しているPHPのバージョンを確認します：</p>";
-    echo "<pre>php -v</pre>";
-    echo "<p>バージョンに合わせたパッケージをインストールしてください。例えば、PHP 7.4の場合：</p>";
-    echo "<pre>sudo apt-get install php7.4-sqlite3</pre>";
+    foreach ($requiredExtensions as $ext => $message) {
+        echo "<tr>";
+        echo "<td>{$ext}</td>";
+        if (extension_loaded($ext)) {
+            echo "<td style='color: green;'>✓ 読み込み済み</td>";
+        } else {
+            echo "<td style='color: red;'>✗ 未読み込み</td>";
+        }
+        echo "</tr>";
+    }
+    echo "</table>";
     
-    echo "<h3>5. 拡張モジュールのディレクトリを確認</h3>";
-    echo "<p>PHPの拡張モジュールディレクトリを確認します：</p>";
-    echo "<pre>php -i | grep extension_dir</pre>";
-    echo "<p>このディレクトリに pdo_sqlite.so と sqlite3.so ファイルが存在するか確認してください。</p>";
+    // php.ini の場所
+    $iniPath = php_ini_loaded_file();
+    echo "<h3>3. php.ini ファイル検証</h3>";
+    if ($iniPath) {
+        echo "<p>読み込まれている php.ini ファイル: <strong>{$iniPath}</strong></p>";
+    } else {
+        echo "<p style='color: red;'>警告: php.ini ファイルが読み込まれていません</p>";
+    }
+    
+    // 拡張モジュールディレクトリ
+    $extDir = ini_get('extension_dir');
+    echo "<h3>4. 拡張モジュールディレクトリ検証</h3>";
+    echo "<p>拡張モジュールディレクトリ: <strong>{$extDir}</strong></p>";
+    
+    // SQLite PDO ドライバの確認
+    echo "<h3>5. SQLite PDO ドライバ検証</h3>";
+    $pdoDrivers = PDO::getAvailableDrivers();
+    echo "<p>利用可能な PDO ドライバ: ";
+    if (in_array('sqlite', $pdoDrivers)) {
+        echo "<span style='color: green;'>sqlite ✓</span>";
+    } else {
+        echo "<span style='color: red;'>sqlite ✗</span>";
+    }
+    echo "</p>";
     
     echo "<h2>詳細情報</h2>";
     echo "<p>このモニタリングツールはSQLiteデータベースを使用してモニタリングデータを保存します。</p>";
@@ -236,32 +263,63 @@ try {
         echo "<p>php.iniファイルで以下の行のコメントを解除してください：</p>";
         echo "<pre>;extension=pdo_sqlite\n;extension=sqlite3</pre>";
         
-        echo "<h2>インストール後のトラブルシューティング</h2>";
-        echo "<p>パッケージをインストールしても問題が解決しない場合は、以下の手順を試してください：</p>";
+        // 自動検証セクション - インストール後のトラブルシューティングを自動化
+        echo "<h2>SQLiteドライバの自動検証</h2>";
         
-        echo "<h3>1. PHPの設定を確認</h3>";
-        echo "<p>以下のコマンドを実行して、SQLite関連の拡張モジュールが正しく読み込まれているか確認します：</p>";
-        echo "<pre>php -m | grep -i sqlite</pre>";
-        echo "<p>または、以下のPHPスクリプトを作成して実行することでも確認できます：</p>";
-        echo "<pre>&lt;?php\necho \"インストールされているPHP拡張モジュール：\\n\";\nprint_r(get_loaded_extensions());\necho \"\\nSQLite PDOドライバ：\\n\";\nprint_r(PDO::getAvailableDrivers());\n?&gt;</pre>";
+        // PHP バージョンの確認
+        $phpVersion = phpversion();
+        echo "<h3>1. PHPバージョン検証</h3>";
+        echo "<div style='margin-bottom: 10px;'>";
+        echo "現在のPHPバージョン: <strong>{$phpVersion}</strong>";
+        if (version_compare($phpVersion, '7.4', '>=')) {
+            echo " <span style='color: green;'>✓ 要件を満たしています</span>";
+        } else {
+            echo " <span style='color: red;'>✗ PHP 7.4以上が必要です</span>";
+        }
+        echo "</div>";
         
-        echo "<h3>2. Webサーバーの再起動</h3>";
-        echo "<p>拡張モジュールをインストールした後、必ずWebサーバーを再起動してください：</p>";
-        echo "<pre>sudo systemctl restart apache2</pre>";
-        echo "<p>または</p>";
-        echo "<pre>sudo systemctl restart nginx\nsudo systemctl restart php-fpm</pre>";
+        // 拡張モジュールの確認
+        echo "<h3>2. 拡張モジュール検証</h3>";
+        echo "<table border='1' cellpadding='5' style='border-collapse: collapse;'>";
+        echo "<tr><th>拡張モジュール</th><th>ステータス</th></tr>";
         
-        echo "<h3>3. PHPのバージョンを確認</h3>";
-        echo "<p>CLIとWebサーバーで異なるPHPバージョンが使用されている可能性があります。以下のコマンドで確認してください：</p>";
-        echo "<pre>php -v</pre>";
-        echo "<p>Webサーバー用に以下のPHPスクリプトを作成して実行することでも確認できます：</p>";
-        echo "<pre>&lt;?php echo phpversion(); ?&gt;</pre>";
+        foreach ($requiredExtensions as $ext => $message) {
+            echo "<tr>";
+            echo "<td>{$ext}</td>";
+            if (extension_loaded($ext)) {
+                echo "<td style='color: green;'>✓ 読み込み済み</td>";
+            } else {
+                echo "<td style='color: red;'>✗ 未読み込み</td>";
+            }
+            echo "</tr>";
+        }
+        echo "</table>";
         
-        echo "<h3>4. php.iniファイルの確認</h3>";
-        echo "<p>CLIとWebサーバーで異なるphp.iniファイルが使用されている可能性があります。以下のコマンドで確認してください：</p>";
-        echo "<pre>php -i | grep 'Loaded Configuration File'</pre>";
-        echo "<p>Webサーバー用に以下のPHPスクリプトを作成して実行することでも確認できます：</p>";
-        echo "<pre>&lt;?php echo php_ini_loaded_file(); ?&gt;</pre>";
+        // php.ini の場所
+        $iniPath = php_ini_loaded_file();
+        echo "<h3>3. php.ini ファイル検証</h3>";
+        if ($iniPath) {
+            echo "<p>読み込まれている php.ini ファイル: <strong>{$iniPath}</strong></p>";
+        } else {
+            echo "<p style='color: red;'>警告: php.ini ファイルが読み込まれていません</p>";
+        }
+        
+        // 拡張モジュールディレクトリ
+        $extDir = ini_get('extension_dir');
+        echo "<h3>4. 拡張モジュールディレクトリ検証</h3>";
+        echo "<p>拡張モジュールディレクトリ: <strong>{$extDir}</strong></p>";
+        
+        // SQLite PDO ドライバの確認
+        echo "<h3>5. SQLite PDO ドライバ検証</h3>";
+        $pdoDrivers = PDO::getAvailableDrivers();
+        echo "<p>利用可能な PDO ドライバ: ";
+        if (in_array('sqlite', $pdoDrivers)) {
+            echo "<span style='color: green;'>sqlite ✓</span>";
+        } else {
+            echo "<span style='color: red;'>sqlite ✗</span>";
+        }
+        echo "</p>";
+        
     } elseif (strpos($e->getMessage(), 'API key') !== false) {
         echo "<h2>API Keyエラーの解決方法</h2>";
         echo "<p>Stability AI APIキーが正しく設定されていることを確認してください。</p>";
