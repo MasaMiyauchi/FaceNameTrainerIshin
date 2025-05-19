@@ -175,26 +175,9 @@ try {
         
         echo "<h2>エラーの詳細</h2>";
         echo "<pre>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";
-    
-    $monitor = new ImageMonitor();
-    
-    echo "<h1>モニタリングツール - テスト実行中</h1>";
-    echo "<div style='color: green; font-weight: bold; margin-bottom: 20px;'>";
-    echo "単一画像生成をテストしています...";
-    echo "</div>";
-    
-    $result = $monitor->monitorImageGeneration($generator, [
-        'age' => 30,
-        'gender' => 'female'
-    ]);
-    
-    echo "<h2>テスト成功！</h2>";
-    echo "<ul>";
-    echo "<li>画像ID: " . htmlspecialchars($result['metadata']['id']) . "</li>";
-    echo "<li>応答時間: " . htmlspecialchars($result['monitoring']['performance']['responseTime']) . "ms</li>";
-    echo "</ul>";
-    
-    echo "<p>すべてのテストが正常に完了しました。</p>";
+        
+        exit(1);
+    }
 } catch (Exception $e) {
     echo "<h1>モニタリングツール - エラー発生</h1>";
     echo "<div style='color: red; font-weight: bold; margin-bottom: 20px;'>";
@@ -209,7 +192,8 @@ try {
         echo "<p>このエラーはPHPのSQLiteドライバが見つからないことを示しています。以下の手順でインストールしてください：</p>";
         
         echo "<h3>Ubuntu/Debian系:</h3>";
-        echo "<pre>sudo apt-get update\nsudo apt-get install php-sqlite3 php-pdo</pre>";
+        echo "<pre>sudo apt-get update\nsudo apt-get install php-sqlite3</pre>";
+        echo "<p>注: PDOはPHPのコアモジュールの一部として提供されています。</p>";
         
         echo "<h3>CentOS/RHEL系:</h3>";
         echo "<pre>sudo yum install php-pdo php-sqlite</pre>";
