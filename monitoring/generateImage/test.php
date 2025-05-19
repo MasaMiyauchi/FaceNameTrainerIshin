@@ -81,9 +81,40 @@ if (!empty($missingExtensions)) {
     echo "<p>コメントを解除後：</p>";
     echo "<pre>extension=pdo_sqlite\nextension=sqlite3</pre>";
     
+    echo "<h2>インストール後の確認方法</h2>";
+    echo "<h3>1. PHPの設定情報を確認</h3>";
+    echo "<p>以下のコマンドを実行して、PHPの設定情報とロードされている拡張モジュールを確認できます：</p>";
+    echo "<pre>php -i | grep -i sqlite</pre>";
+    echo "<p>または、以下のPHPスクリプトを作成して実行することでも確認できます：</p>";
+    echo "<pre>&lt;?php phpinfo(); ?&gt;</pre>";
+    
+    echo "<h3>2. php.iniの場所を確認</h3>";
+    echo "<p>以下のコマンドでPHPが使用しているphp.iniファイルの場所を確認できます：</p>";
+    echo "<pre>php -i | grep 'Loaded Configuration File'</pre>";
+    
+    echo "<h3>3. 拡張モジュールの手動有効化</h3>";
+    echo "<p>php.iniファイルを見つけたら、以下の行が含まれていることを確認し、コメントアウトされていないことを確認してください：</p>";
+    echo "<pre>extension=pdo_sqlite\nextension=sqlite3</pre>";
+    echo "<p>行が見つからない場合は、追加してください。変更後、Webサーバーを再起動してください：</p>";
+    echo "<pre>sudo systemctl restart apache2</pre>";
+    echo "<p>または</p>";
+    echo "<pre>sudo systemctl restart nginx\nsudo systemctl restart php-fpm</pre>";
+    
+    echo "<h3>4. PHPバージョンの確認</h3>";
+    echo "<p>使用しているPHPのバージョンを確認します：</p>";
+    echo "<pre>php -v</pre>";
+    echo "<p>バージョンに合わせたパッケージをインストールしてください。例えば、PHP 7.4の場合：</p>";
+    echo "<pre>sudo apt-get install php7.4-sqlite3</pre>";
+    
+    echo "<h3>5. 拡張モジュールのディレクトリを確認</h3>";
+    echo "<p>PHPの拡張モジュールディレクトリを確認します：</p>";
+    echo "<pre>php -i | grep extension_dir</pre>";
+    echo "<p>このディレクトリに pdo_sqlite.so と sqlite3.so ファイルが存在するか確認してください。</p>";
+    
     echo "<h2>詳細情報</h2>";
     echo "<p>このモニタリングツールはSQLiteデータベースを使用してモニタリングデータを保存します。</p>";
     echo "<p>必要な拡張モジュールをインストールした後、Webサーバーを再起動してください。</p>";
+    echo "<p>Webサーバーの再起動は非常に重要です。インストール後に再起動しないと、新しい拡張モジュールが読み込まれません。</p>";
     
     exit(1);
 }
@@ -204,6 +235,33 @@ try {
         echo "<h3>Windows:</h3>";
         echo "<p>php.iniファイルで以下の行のコメントを解除してください：</p>";
         echo "<pre>;extension=pdo_sqlite\n;extension=sqlite3</pre>";
+        
+        echo "<h2>インストール後のトラブルシューティング</h2>";
+        echo "<p>パッケージをインストールしても問題が解決しない場合は、以下の手順を試してください：</p>";
+        
+        echo "<h3>1. PHPの設定を確認</h3>";
+        echo "<p>以下のコマンドを実行して、SQLite関連の拡張モジュールが正しく読み込まれているか確認します：</p>";
+        echo "<pre>php -m | grep -i sqlite</pre>";
+        echo "<p>または、以下のPHPスクリプトを作成して実行することでも確認できます：</p>";
+        echo "<pre>&lt;?php\necho \"インストールされているPHP拡張モジュール：\\n\";\nprint_r(get_loaded_extensions());\necho \"\\nSQLite PDOドライバ：\\n\";\nprint_r(PDO::getAvailableDrivers());\n?&gt;</pre>";
+        
+        echo "<h3>2. Webサーバーの再起動</h3>";
+        echo "<p>拡張モジュールをインストールした後、必ずWebサーバーを再起動してください：</p>";
+        echo "<pre>sudo systemctl restart apache2</pre>";
+        echo "<p>または</p>";
+        echo "<pre>sudo systemctl restart nginx\nsudo systemctl restart php-fpm</pre>";
+        
+        echo "<h3>3. PHPのバージョンを確認</h3>";
+        echo "<p>CLIとWebサーバーで異なるPHPバージョンが使用されている可能性があります。以下のコマンドで確認してください：</p>";
+        echo "<pre>php -v</pre>";
+        echo "<p>Webサーバー用に以下のPHPスクリプトを作成して実行することでも確認できます：</p>";
+        echo "<pre>&lt;?php echo phpversion(); ?&gt;</pre>";
+        
+        echo "<h3>4. php.iniファイルの確認</h3>";
+        echo "<p>CLIとWebサーバーで異なるphp.iniファイルが使用されている可能性があります。以下のコマンドで確認してください：</p>";
+        echo "<pre>php -i | grep 'Loaded Configuration File'</pre>";
+        echo "<p>Webサーバー用に以下のPHPスクリプトを作成して実行することでも確認できます：</p>";
+        echo "<pre>&lt;?php echo php_ini_loaded_file(); ?&gt;</pre>";
     } elseif (strpos($e->getMessage(), 'API key') !== false) {
         echo "<h2>API Keyエラーの解決方法</h2>";
         echo "<p>Stability AI APIキーが正しく設定されていることを確認してください。</p>";
