@@ -82,22 +82,14 @@ class ImageGenerator {
      * @return array API response data
      */
     private function callStabilityAPI($prompt, $seed) {
-        $textPrompts = [
-            [
-                'text' => $prompt,
-                'weight' => 1.0
-            ]
-        ];
-        
-        $textPromptsJson = json_encode($textPrompts);
-        
+        // For Stability AI API v2beta, we need to use 'prompt' parameter
         $formData = [
             'width' => $this->imageWidth,
             'height' => $this->imageHeight,
             'seed' => $seed,
             'cfg_scale' => 7.5,
             'samples' => 1,
-            'text_prompts' => $textPromptsJson
+            'prompt' => $prompt // Use prompt directly instead of text_prompts
         ];
         
         $attempts = 0;
