@@ -82,18 +82,22 @@ class ImageGenerator {
      * @return array API response data
      */
     private function callStabilityAPI($prompt, $seed) {
-        $requestData = [
+        $textPrompts = [
+            [
+                'text' => $prompt,
+                'weight' => 1.0
+            ]
+        ];
+        
+        $textPromptsJson = json_encode($textPrompts);
+        
+        $formData = [
             'width' => $this->imageWidth,
             'height' => $this->imageHeight,
             'seed' => $seed,
             'cfg_scale' => 7.5,
             'samples' => 1,
-            'text_prompts' => [
-                [
-                    'text' => $prompt,
-                    'weight' => 1.0
-                ]
-            ]
+            'text_prompts' => $textPromptsJson
         ];
         
         $attempts = 0;
@@ -105,9 +109,8 @@ class ImageGenerator {
                 $ch = curl_init($this->apiEndpoint);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($requestData));
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $formData); // Send as multipart/form-data
                 curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                    'Content-Type: application/json',
                     'Accept: application/json',
                     'Authorization: Bearer ' . $this->apiKey
                 ]);
