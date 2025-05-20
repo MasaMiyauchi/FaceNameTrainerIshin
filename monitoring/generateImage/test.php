@@ -34,6 +34,15 @@ loadEnv($envFile);
 
 require_once __DIR__ . '/php/ImageGenerator.php';
 require_once __DIR__ . '/php/ImageMonitor.php';
+?>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>モニタリングツール - 画像生成テスト</title>
+    <meta charset="UTF-8">
+    <script src="js/errorDisplay.js"></script>
+</head>
+<body>
 
 $apiKey = getenv('STABILITY_API_KEY');
 
@@ -189,7 +198,86 @@ try {
         echo "エラー: " . htmlspecialchars($e->getMessage());
         echo "</div>";
         
+        $monitoringMetrics = null;
+        if (isset($generator) && method_exists($generator, 'getLastApiCallDetails')) {
+            $monitoringMetrics = $generator->getLastApiCallDetails();
+        }
+        
+        if ($monitoringMetrics) {
+            echo "<h2>パフォーマンスメトリクス</h2>";
+            echo "<div style='background-color: #f5f5f5; padding: 10px; border-radius: 5px; margin-bottom: 20px;'>";
+            echo "<table style='width: 100%; border-collapse: collapse;'>";
+            echo "<tr><th style='text-align: left; padding: 5px; border-bottom: 1px solid #ddd;'>メトリクス</th><th style='text-align: left; padding: 5px; border-bottom: 1px solid #ddd;'>値</th></tr>";
+            
+            if ($monitoringMetrics['responseTime'] !== null) {
+                echo "<tr><td style='padding: 5px; border-bottom: 1px solid #ddd;'>応答時間</td><td style='padding: 5px; border-bottom: 1px solid #ddd;'>" . round($monitoringMetrics['responseTime'], 2) . " ms</td></tr>";
+            }
+            
+            if ($monitoringMetrics['attemptCount'] !== null) {
+                echo "<tr><td style='padding: 5px; border-bottom: 1px solid #ddd;'>試行回数</td><td style='padding: 5px; border-bottom: 1px solid #ddd;'>" . $monitoringMetrics['attemptCount'] . "</td></tr>";
+            }
+            
+            if ($monitoringMetrics['statusCode'] !== null) {
+                $statusClass = 'success';
+                if ($monitoringMetrics['statusCode'] >= 400) {
+                    $statusClass = 'error';
+                }
+                echo "<tr><td style='padding: 5px; border-bottom: 1px solid #ddd;'>ステータスコード</td><td style='padding: 5px; border-bottom: 1px solid #ddd; color: " . ($statusClass === 'error' ? 'red' : 'green') . ";'>" . $monitoringMetrics['statusCode'] . "</td></tr>";
+            }
+            
+            echo "</table>";
+            echo "</div>";
+        }
+        
         $errorMsg = $e->getMessage();
+        
+        if (strpos($errorMsg, 'API error:') !== false || strpos($errorMsg, 'Authentication Error:') !== false || 
+            strpos($errorMsg, 'Server Error:') !== false || strpos($errorMsg, 'No image data in API response:') !== false) {
+            
+            echo "<div style='margin-bottom: 10px;'>";
+            echo "<button id='toggle-api-response' onclick='toggleElement(\"api-response\")' style='padding: 5px 10px; background-color: #f5f5f5; border: 1px solid #ddd; border-radius: 3px; cursor: pointer;'>[+] Show Details</button>";
+            echo "</div>";
+            
+            echo "<div id='api-response' data-toggleable style='display: none;'>";
+            echo "<h2>API レスポンスの詳細</h2>";
+            
+            if (preg_match('/{.*}/s', $errorMsg, $matches)) {
+                $jsonPart = $matches[0];
+                try {
+                    $jsonObj = json_decode($jsonPart);
+                    if ($jsonObj !== null) {
+                        $jsonPart = json_encode($jsonObj, JSON_PRETTY_PRINT);
+                    }
+                } catch (Exception $jsonErr) {
+                }
+                
+                echo "<div style='background-color: #f5f5f5; padding: 10px; border-radius: 5px; overflow: auto; max-height: 400px;'>";
+                echo "<pre>" . htmlspecialchars($jsonPart) . "</pre>";
+                echo "</div>";
+            } else {
+                echo "<pre>" . htmlspecialchars($errorMsg) . "</pre>";
+            }
+            
+            echo "<h2>エラーの原因</h2>";
+            echo "<div>";
+            echo "<p>APIレスポンスに問題があります。考えられる原因：</p>";
+            echo "<ul>";
+            
+            if (strpos($errorMsg, 'Authentication Error:') !== false || (isset($monitoringMetrics['statusCode']) && $monitoringMetrics['statusCode'] >= 400 && $monitoringMetrics['statusCode'] < 500)) {
+                echo "<li><strong>認証エラー (400-499):</strong> APIキーが無効または、リクエストパラメータが正しくない可能性があります。</li>";
+            } elseif (strpos($errorMsg, 'Server Error:') !== false || (isset($monitoringMetrics['statusCode']) && $monitoringMetrics['statusCode'] >= 500)) {
+                echo "<li><strong>サーバーエラー (500-599):</strong> APIサービス側で問題が発生しています。後でもう一度お試しください。</li>";
+            } else {
+                echo "<li>APIキーが無効または期限切れの可能性があります。</li>";
+                echo "<li>APIエンドポイントが変更された可能性があります。</li>";
+                echo "<li>APIが過負荷またはメンテナンス中の可能性があります。</li>";
+                echo "<li>リクエストパラメータが正しくない可能性があります。</li>";
+            }
+            
+            echo "</ul>";
+            echo "</div>";
+            echo "</div>";
+        }
         
         if (strpos($errorMsg, 'ディレクトリ作成時の権限エラー') !== false || 
             strpos($errorMsg, 'Permission denied') !== false && strpos($errorMsg, 'mkdir') !== false) {
@@ -335,3 +423,6 @@ try {
         echo "</ul>";
     }
 }
+?>
+</body>
+</html>
