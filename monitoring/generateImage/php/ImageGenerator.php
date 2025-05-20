@@ -25,6 +25,9 @@ class ImageGenerator {
     ];
     
     private $apiKey;
+    private $lastStatusCode;
+    private $lastResponseTime;
+    private $lastAttemptCount;
     
     /**
      * Constructor
@@ -82,6 +85,10 @@ class ImageGenerator {
      * @return array API response data
      */
     private function callStabilityAPI($prompt, $seed) {
+        $this->lastStatusCode = null;
+        $this->lastResponseTime = null;
+        $this->lastAttemptCount = 0;
+        
         // For Stability AI API v2beta, we need to use 'prompt' parameter
         $formData = [
             'width' => $this->imageWidth,
@@ -98,6 +105,9 @@ class ImageGenerator {
         
         while ($attempts < $maxAttempts) {
             try {
+                $this->lastAttemptCount++;
+                $startTime = microtime(true);
+                
                 $ch = curl_init($this->apiEndpoint);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 curl_setopt($ch, CURLOPT_POST, true);
@@ -108,12 +118,18 @@ class ImageGenerator {
                 ]);
                 
                 $response = curl_exec($ch);
-                $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                $endTime = microtime(true);
+                $this->lastResponseTime = ($endTime - $startTime) * 1000; // in milliseconds
+                $this->lastStatusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
                 curl_close($ch);
                 
-                if ($statusCode !== 200) {
+                if ($this->lastStatusCode !== 200) {
                     $errorData = json_decode($response, true) ?: [];
-                    throw new Exception("API error: {$statusCode} - " . json_encode($errorData));
+                    $errorCategory = intval($this->lastStatusCode / 100);
+                    $errorType = ($errorCategory === 4) ? 'Authentication Error' : (($errorCategory === 5) ? 'Server Error' : 'API Error');
+                    $sanitizedResponse = $this->sanitizeApiResponse($errorData);
+                    $formattedResponse = json_encode($sanitizedResponse, JSON_PRETTY_PRINT);
+                    throw new Exception("{$errorType}: {$this->lastStatusCode} - " . $formattedResponse);
                 }
                 
                 return json_decode($response, true);
@@ -144,7 +160,8 @@ class ImageGenerator {
      */
     private function processAPIResponse($response, $age, $gender, $seed) {
         if (empty($response['artifacts']) || count($response['artifacts']) === 0) {
-            throw new Exception('No image data in API response');
+            $sanitizedResponse = $this->sanitizeApiResponse($response);
+            throw new Exception('No image data in API response: ' . json_encode($sanitizedResponse, JSON_PRETTY_PRINT));
         }
         
         $artifact = $response['artifacts'][0];
@@ -226,5 +243,47 @@ class ImageGenerator {
         }
         
         return $gender;
+    }
+    
+    /**
+     * Sanitize API response to remove sensitive information
+     * 
+     * @param array $response The API response to sanitize
+     * @return array Sanitized API response
+     */
+    private function sanitizeApiResponse($response) {
+        $sanitized = $response;
+        
+        if (isset($sanitized['authorization']) || isset($sanitized['Authorization'])) {
+            unset($sanitized['authorization']);
+            unset($sanitized['Authorization']);
+        }
+        
+        foreach ($sanitized as $key => $value) {
+            if (is_array($value)) {
+                $sanitized[$key] = $this->sanitizeApiResponse($value);
+            } elseif (is_string($value) && (
+                strpos(strtolower($key), 'key') !== false || 
+                strpos(strtolower($key), 'token') !== false || 
+                strpos(strtolower($key), 'auth') !== false
+            )) {
+                $sanitized[$key] = '[REDACTED]';
+            }
+        }
+        
+        return $sanitized;
+    }
+    
+    /**
+     * Get the last API call details
+     * 
+     * @return array API call details or null if no call has been made
+     */
+    public function getLastApiCallDetails() {
+        return [
+            'statusCode' => $this->lastStatusCode ?? null,
+            'responseTime' => $this->lastResponseTime ?? null,
+            'attemptCount' => $this->lastAttemptCount ?? null
+        ];
     }
 }
