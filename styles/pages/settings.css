@@ -1,0 +1,53 @@
+/* トレーニング設定ページ専用スタイル */
+.settings-form {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.range-container {
+    display: flex;
+    align-items: center;
+}
+
+.range-container input[type="range"] {
+    flex: 1;
+    margin-right: 15px;
+}
+
+.range-container span {
+    width: 50px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.radio-group {
+    display: flex;
+    gap: 15px;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.radio-label input[type="radio"] {
+    margin-right: 5px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 30px;
+}
