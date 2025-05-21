@@ -137,13 +137,12 @@ async function callStabilityAPI(prompt, seed) {
  * @returns {Object} - Processed image data and metadata
  */
 function processAPIResponse(response, age, gender, seed) {
-  if (!response.artifacts || response.artifacts.length === 0) {
+  if (!response.image) {
     throw new Error('No image data in API response');
   }
   
-  const artifact = response.artifacts[0];
-  const base64Data = artifact.base64;
-  const finishReason = artifact.finishReason;
+  const base64Data = response.image;
+  const finishReason = response.finish_reason;
   
   const randomId = Math.floor(Math.random() * 10000000000).toString().padStart(10, '0');
   const filename = `${age}-${gender}-${randomId}-face.jpeg`;
