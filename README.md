@@ -182,14 +182,11 @@ POST https://api.stability.ai/v2beta/stable-image/generate/core
 ### 5. レスポンス例
 ```json
 {
-  "artifacts": [
-    {
-      "base64": "...",    // 生成画像のBase64文字列
-      "seed": 1234567890,
-      "finishReason": "SUCCESS"
-    }
-  ]
+  "image": "...",    // 生成画像のBase64文字列
+  "finish_reason": "SUCCESS",
+  "seed": 1234567890
 }
+```
 
 ### 6. 生成画像の保存・再利用
 
