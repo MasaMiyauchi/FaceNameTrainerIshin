@@ -256,7 +256,53 @@ POST https://api.stability.ai/v2beta/stable-image/generate/core
 
 ---
 
+# ディレクトリ構造
 
+プロジェクトは以下のディレクトリ構造で構成されています：
+
+```
+FaceNameTrainerIshin/
+├── assets/                      # アプリケーションで使用されるデータファイル
+│   ├── faces/                   # 生成された顔画像の保存場所
+│   ├── names/                   # 年齢・性別ごとの名前データ
+│   │   ├── familyNames.txt      # 姓（苗字）のリスト
+│   │   ├── 20-female-Names.txt  # 20代女性の名前リスト
+│   │   ├── 20-male-Names.txt    # 20代男性の名前リスト
+│   │   └── ...                  # その他の年齢・性別の名前リスト
+│   └── data/                    # データベースファイルなどの保存場所
+│
+├── monitoring/                  # アプリケーションのモニタリングツール
+│   └── generateImage/           # 画像生成モニタリングツール
+│       ├── php/                 # PHP実装
+│       │   ├── ImageGenerator.php  # 顔画像生成クラス
+│       │   └── ImageMonitor.php    # 画像生成モニタリングクラス
+│       ├── js/                  # JavaScript実装
+│       │   ├── imageGenerator.js   # 顔画像生成関数
+│       │   └── imageMonitor.js     # 画像生成モニタリング関数
+│       └── test.php             # 画像生成機能のテストスクリプト
+│
+├── php/                         # バックエンドPHP処理
+│   ├── api/                     # 外部APIとの連携を担当するクラス（予定）
+│   ├── models/                  # データモデルとデータベース操作（予定）
+│   └── utils/                   # ユーティリティ関数とヘルパークラス（予定）
+│
+├── script/                      # フロントエンドJavaScript
+│   ├── modules/                 # 主要機能モジュール（予定）
+│   ├── components/              # 再利用可能なUIコンポーネント（予定）
+│   └── utils/                   # ユーティリティ関数（予定）
+│
+├── styles/                      # CSSスタイルシート
+│   ├── base/                    # 基本スタイル定義（予定）
+│   ├── components/              # UIコンポーネント別スタイル（予定）
+│   └── pages/                   # ページ別スタイル（予定）
+│
+├── .env.example                 # 環境変数テンプレート
+├── setup.php                    # PHP環境設定スクリプト
+├── setup.sh                     # Bash環境設定スクリプト
+└── README.md                    # プロジェクト説明（このファイル）
+```
+
+各ディレクトリの詳細については、それぞれのディレクトリ内のREADME.mdファイルを参照してください。
 
 #技術スタック
 - フロントエンド: HTML, CSS, JavaScript
