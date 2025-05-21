@@ -16,6 +16,8 @@ class FaceNameService {
     private $faceDatabase;
     
     public function __construct() {
+        $this->loadEnvFile();
+        
         $apiKey = getenv('STABILITY_API_KEY');
         if (empty($apiKey)) {
             throw new Exception('STABILITY_API_KEYが設定されていません');
@@ -25,6 +27,32 @@ class FaceNameService {
         $this->imageMonitor = new ImageMonitor();
         $this->nameGenerator = new NameGenerator();
         $this->faceDatabase = new FaceDatabase();
+    }
+    
+    /**
+     * .envファイルを読み込み、環境変数を設定する
+     */
+    private function loadEnvFile() {
+        $envFile = dirname(__DIR__, 2) . '/.env';
+        
+        if (file_exists($envFile)) {
+            $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            foreach ($lines as $line) {
+                if (strpos(trim($line), '#') === 0) {
+                    continue;
+                }
+                
+                list($name, $value) = explode('=', $line, 2);
+                $name = trim($name);
+                $value = trim($value);
+                
+                if (!empty($name) && !empty($value)) {
+                    putenv("{$name}={$value}");
+                    $_ENV[$name] = $value;
+                    $_SERVER[$name] = $value;
+                }
+            }
+        }
     }
     
     /**
