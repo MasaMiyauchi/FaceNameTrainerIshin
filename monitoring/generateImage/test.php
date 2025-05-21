@@ -186,7 +186,7 @@ try {
         
         echo "<h2>テスト成功！</h2>";
         echo "<div style='margin-bottom: 20px;'>";
-        echo "<img src='" . htmlspecialchars($result['metadata']['image_uri']) . "' alt='生成された顔画像' style='max-width: 300px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 15px;'>";
+        echo "<img src='/" . htmlspecialchars($result['metadata']['image_uri']) . "' alt='生成された顔画像' style='max-width: 300px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 15px;'>";
         echo "</div>";
         echo "<ul>";
         echo "<li>画像ID: " . htmlspecialchars($result['metadata']['id']) . "</li>";
