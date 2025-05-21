@@ -159,14 +159,13 @@ class ImageGenerator {
      * @return array Processed image data and metadata
      */
     private function processAPIResponse($response, $age, $gender, $seed) {
-        if (empty($response['artifacts']) || count($response['artifacts']) === 0) {
+        if (empty($response['image'])) {
             $sanitizedResponse = $this->sanitizeApiResponse($response);
             throw new Exception('No image data in API response: ' . json_encode($sanitizedResponse, JSON_PRETTY_PRINT));
         }
         
-        $artifact = $response['artifacts'][0];
-        $base64Data = $artifact['base64'];
-        $finishReason = $artifact['finishReason'];
+        $base64Data = $response['image'];
+        $finishReason = $response['finish_reason'];
         
         $randomId = str_pad(mt_rand(0, 9999999999), 10, '0', STR_PAD_LEFT);
         $filename = "{$age}-{$gender}-{$randomId}-face.jpeg";
