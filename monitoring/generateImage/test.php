@@ -43,7 +43,7 @@ require_once __DIR__ . '/php/ImageMonitor.php';
     <script src="js/errorDisplay.js"></script>
 </head>
 <body>
-
+<?php
 $apiKey = getenv('STABILITY_API_KEY');
 
 $requiredExtensions = [
