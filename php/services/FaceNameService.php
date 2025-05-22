@@ -110,19 +110,24 @@ class FaceNameService {
     }
     
     /**
-     * 既存の顔画像からランダムに選択
+     * 既存の顔画像からランダムに選択し、必ず1つ以上の新しい顔画像を生成
      * 
      * @param int $count 取得する数
      * @param array $conditions 条件（年齢・性別の指定など）
      * @return array 顔画像と名前のデータの配列
      */
     public function getRandomFaceNamePairs($count, $conditions = []) {
-        $faces = $this->faceDatabase->getRandomFaces($conditions, $count);
+        $maxExistingFaces = max(0, $count - 1);
+        $faces = $this->faceDatabase->getRandomFaces($conditions, $maxExistingFaces);
         
-        if (count($faces) < $count) {
-            $needToGenerate = $count - count($faces);
-            $newFaces = $this->generateMultiplePairs($needToGenerate, $conditions);
-            $faces = array_merge($faces, $newFaces);
+        $needToGenerate = max(1, $count - count($faces));
+        
+        $newFaces = $this->generateMultiplePairs($needToGenerate, $conditions);
+        
+        $faces = array_merge($faces, $newFaces);
+        
+        if (count($faces) > $count) {
+            $faces = array_slice($faces, 0, $count);
         }
         
         return $faces;
