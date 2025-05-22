@@ -32,7 +32,7 @@ $rootDir = dirname(__DIR__, 2);
 $envFile = $rootDir . '/.env';
 loadEnv($envFile);
 
-require_once __DIR__ . '/php/ImageGenerator.php';
+require_once __DIR__ . '/../../php/api/ImageGenerator/ImageGenerator.php';
 require_once __DIR__ . '/php/ImageMonitor.php';
 ?>
 <!DOCTYPE html>

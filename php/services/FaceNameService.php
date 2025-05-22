@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../utils/NameGenerator.php';
 require_once __DIR__ . '/../models/FaceDatabase.php';
-require_once __DIR__ . '/../../monitoring/generateImage/php/ImageGenerator.php';
+require_once __DIR__ . '/../api/ImageGenerator/ImageGenerator.php';
 require_once __DIR__ . '/../../monitoring/generateImage/php/ImageMonitor.php';
 
 /**
