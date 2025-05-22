@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>顔名前トレーナー - テスト結果</title>
+    <link rel="stylesheet" href="styles/base/main.css">
+    <link rel="stylesheet" href="styles/pages/test.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>顔名前トレーナー</h1>
+            <div class="subtitle">テスト結果</div>
+        </header>
+        
+        <main>
+            <div id="loading" class="loading-container">
+                <div class="loader"></div>
+                <p>結果を集計中...</p>
+            </div>
+            
+            <div id="results-container" style="display: none;">
+                <div class="result-summary">
+                    <div class="result-score"><span id="correct-count">0</span>/<span id="question-count">0</span></div>
+                    <div class="result-text">
+                        正答率: <span id="accuracy">0</span>%
+                    </div>
+                </div>
+                
+                <div class="result-details" id="result-details">
+                    <!-- 結果の詳細がJSで動的に生成されます -->
+                </div>
+                
+                <div class="result-actions">
+                    <button id="retry-btn" class="primary-btn">もう一度テストする</button>
+                    <button id="home-btn" class="secondary-btn">トップに戻る</button>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="script/modules/testResults.js"></script>
+</body>
+</html>

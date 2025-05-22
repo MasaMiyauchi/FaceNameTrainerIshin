@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>顔名前トレーナー - テストモード（Bコース）</title>
+    <link rel="stylesheet" href="styles/base/main.css">
+    <link rel="stylesheet" href="styles/pages/test.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>顔名前トレーナー</h1>
+            <div class="subtitle">テストモード（Bコース）</div>
+        </header>
+        
+        <main>
+            <div id="loading" class="loading-container">
+                <div class="loader"></div>
+                <p>テストを準備中...</p>
+            </div>
+            
+            <div id="test-container" style="display: none;">
+                <div class="progress-bar">
+                    <div id="progress" class="progress"></div>
+                </div>
+                
+                <div class="question-container">
+                    <div class="question-header">
+                        <div class="question-number">問題 <span id="current-question">1</span>/<span id="total-questions">5</span></div>
+                        <div class="question-prompt">この人の名前は？</div>
+                    </div>
+                    
+                    <div class="target-face">
+                        <img id="target-face" src="" alt="顔画像">
+                    </div>
+                    
+                    <div class="name-input-container">
+                        <input type="text" id="name-input" class="name-input-field" placeholder="名前を入力してください" autocomplete="off">
+                        <div id="name-feedback" class="name-feedback"></div>
+                    </div>
+                </div>
+                
+                <div class="test-controls">
+                    <button id="check-btn" class="primary-btn">回答する</button>
+                    <button id="next-btn" class="primary-btn" style="display: none;">次へ</button>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <button id="cancel-btn" class="cancel-btn">キャンセル</button>
+        </footer>
+    </div>
+    
+    <script src="script/modules/testCourseB.js"></script>
+</body>
+</html>
