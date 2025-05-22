@@ -27,11 +27,37 @@ const testButton = document.getElementById('test-btn');
 const reviewButton = document.getElementById('review-btn');
 const cancelButton = document.getElementById('cancel-btn');
 
+const loadingStatusElement = document.getElementById('loading-status');
+const loadingProgressBar = document.getElementById('loading-progress-bar');
+const loadingPercentage = document.getElementById('loading-percentage');
+
+/**
+ * 進行状況を更新する
+ * @param {number} percent - 進行状況のパーセンテージ (0-100)
+ * @param {string} status - 現在の状態を示すテキスト
+ */
+function updateLoadingProgress(percent, status) {
+    loadingProgressBar.style.width = `${percent}%`;
+    loadingPercentage.textContent = `${Math.round(percent)}%`;
+    
+    if (status) {
+        loadingStatusElement.textContent = status;
+    }
+}
+
 /**
  * 初期化関数
  */
 async function init() {
     try {
+        updateLoadingProgress(5, '準備中...');
+        
+        await simulateProgress(5, 15, '顔データベースに接続中...');
+        
+        await simulateProgress(15, 30, '既存の顔データを検索中...');
+        
+        updateLoadingProgress(30, '顔と名前のデータを取得中...');
+        
         const response = await fetch(`php/api/training.php?action=get_random_pairs&count=${personCount}`);
         const result = await response.json();
         
@@ -39,7 +65,11 @@ async function init() {
             throw new Error(result.error || '顔と名前のデータを取得できませんでした');
         }
         
+        updateLoadingProgress(70, 'データを処理中...');
+        
         faceNameData = result.data;
+        
+        await simulateProgress(70, 100, 'トレーニングの準備完了');
         
         loadingElement.style.display = 'none';
         memoryContainer.style.display = 'block';
@@ -50,9 +80,39 @@ async function init() {
         setupEventListeners();
         
     } catch (error) {
+        updateLoadingProgress(100, `エラーが発生しました: ${error.message}`);
         alert(`エラーが発生しました: ${error.message}`);
         console.error('Error initializing memory mode:', error);
     }
+}
+
+/**
+ * 進行状況のシミュレーション
+ * @param {number} startPercent - 開始パーセンテージ
+ * @param {number} endPercent - 終了パーセンテージ
+ * @param {string} status - 表示するステータスメッセージ
+ * @returns {Promise} 完了時に解決されるPromise
+ */
+function simulateProgress(startPercent, endPercent, status) {
+    return new Promise(resolve => {
+        const duration = 500 + Math.random() * 1000; // 0.5〜1.5秒のランダムな時間
+        const startTime = Date.now();
+        
+        updateLoadingProgress(startPercent, status);
+        
+        const interval = setInterval(() => {
+            const elapsedTime = Date.now() - startTime;
+            const progress = Math.min(elapsedTime / duration, 1);
+            const currentPercent = startPercent + progress * (endPercent - startPercent);
+            
+            updateLoadingProgress(currentPercent, status);
+            
+            if (progress >= 1) {
+                clearInterval(interval);
+                resolve();
+            }
+        }, 50);
+    });
 }
 
 /**
