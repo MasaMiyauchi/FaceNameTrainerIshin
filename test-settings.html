@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>顔名前トレーナー - テスト設定</title>
+    <link rel="stylesheet" href="styles/base/main.css">
+    <link rel="stylesheet" href="styles/pages/settings.css">
+    <link rel="stylesheet" href="styles/pages/test.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>顔名前トレーナー</h1>
+            <div class="subtitle">テスト設定</div>
+        </header>
+        
+        <main>
+            <form id="test-form" class="settings-form">
+                <div class="form-group">
+                    <label>テストコース選択</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="test-course" value="a" id="course-a" checked>
+                            <span>Aコース（名前→顔選択）</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="test-course" value="b" id="course-b">
+                            <span>Bコース（顔→名前入力）</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="question-count">問題数</label>
+                    <div class="range-container">
+                        <input type="range" id="question-count" name="question-count" min="3" max="10" value="5">
+                        <span id="question-count-value">5問</span>
+                    </div>
+                    <p class="form-help">※記憶した人数が上限となります</p>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="primary-btn">テスト開始</button>
+                    <button type="button" id="cancel-btn" class="secondary-btn">キャンセル</button>
+                </div>
+            </form>
+        </main>
+    </div>
+    
+    <script src="script/modules/testSettings.js"></script>
+</body>
+</html>
