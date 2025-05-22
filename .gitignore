@@ -4,4 +4,5 @@
 assets/faces/*
 
 # Database files
-data/monitoring.db
+assets/data/monitoring.db
+assets/data/faces.db
