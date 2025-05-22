@@ -212,13 +212,18 @@ class ImageGenerator {
     }
     
     /**
-     * Validate age parameter
+     * Validate age parameter or generate random age if null
      * 
      * @param mixed $age Age to validate
      * @return int Validated age
      */
     private function validateAge($age) {
         $validAges = array_keys($this->ageDistribution);
+        
+        if ($age === null || $age === '') {
+            return $this->generateRandomAge();
+        }
+        
         $parsedAge = (int)$age;
         
         if (!in_array((string)$parsedAge, $validAges)) {
@@ -229,7 +234,7 @@ class ImageGenerator {
     }
     
     /**
-     * Validate gender parameter
+     * Validate gender parameter or generate random gender if null
      * 
      * @param string $gender Gender to validate
      * @return string Validated gender
@@ -237,11 +242,53 @@ class ImageGenerator {
     private function validateGender($gender) {
         $validGenders = array_keys($this->genderDistribution);
         
+        if ($gender === null || $gender === '') {
+            return $this->generateRandomGender();
+        }
+        
         if (!in_array($gender, $validGenders)) {
             throw new Exception("Invalid gender: {$gender}. Must be one of: " . implode(', ', $validGenders));
         }
         
         return $gender;
+    }
+    
+    /**
+     * Generate a random age based on the age distribution
+     * 
+     * @return int Random age
+     */
+    private function generateRandomAge() {
+        $rand = mt_rand(1, 100) / 100;
+        $cumulative = 0;
+        
+        foreach ($this->ageDistribution as $age => $probability) {
+            $cumulative += $probability;
+            if ($rand <= $cumulative) {
+                return (int)$age;
+            }
+        }
+        
+        return (int)array_keys($this->ageDistribution)[0];
+    }
+    
+    /**
+     * Generate a random gender based on the gender distribution
+     * 
+     * @return string Random gender
+     */
+    private function generateRandomGender() {
+        $rand = mt_rand(1, 100) / 100;
+        $cumulative = 0;
+        
+        foreach ($this->genderDistribution as $gender => $probability) {
+            $cumulative += $probability;
+            if ($rand <= $cumulative) {
+                return $gender;
+            }
+        }
+        
+        return array_keys($this->genderDistribution)[0];
     }
     
     /**

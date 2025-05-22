@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>顔名前トレーナー - 記憶モード</title>
+    <link rel="stylesheet" href="styles/base/main.css">
+    <link rel="stylesheet" href="styles/pages/memory.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>顔名前トレーナー</h1>
+            <div class="subtitle">記憶モード</div>
+        </header>
+        
+        <main>
+            <div id="loading" class="loading-container">
+                <div class="loader"></div>
+                <p>顔と名前を準備中...</p>
+            </div>
+            
+            <div id="memory-container" class="memory-container" style="display: none;">
+                <div class="progress-bar">
+                    <div id="progress" class="progress"></div>
+                </div>
+                
+                <div class="memory-card">
+                    <div class="face-container">
+                        <img id="face-image" src="" alt="顔画像">
+                    </div>
+                    <div class="name-container">
+                        <h2 id="full-name"></h2>
+                        <div class="name-details">
+                            <span id="age-gender"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="timer-container">
+                    <div id="timer" class="timer">10</div>
+                </div>
+                
+                <div class="controls">
+                    <button id="prev-btn" class="control-btn" disabled>前へ</button>
+                    <button id="pause-btn" class="control-btn">一時停止</button>
+                    <button id="next-btn" class="control-btn">次へ</button>
+                </div>
+            </div>
+            
+            <div id="completion" class="completion" style="display: none;">
+                <h2>記憶タイムが終了しました</h2>
+                <p>全ての顔と名前を記憶できましたか？</p>
+                <div class="completion-buttons">
+                    <button id="test-btn" class="primary-btn">テストモードへ進む</button>
+                    <button id="review-btn" class="secondary-btn">記憶を復習する</button>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <button id="cancel-btn" class="cancel-btn">キャンセル</button>
+        </footer>
+    </div>
+    
+    <script src="script/modules/memoryMode.js"></script>
+</body>
+</html>

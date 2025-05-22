@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>顔名前トレーナー - トレーニング設定</title>
+    <link rel="stylesheet" href="styles/base/main.css">
+    <link rel="stylesheet" href="styles/pages/settings.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>顔名前トレーナー</h1>
+            <div class="subtitle">トレーニング設定</div>
+        </header>
+        
+        <main>
+            <form id="training-form" class="settings-form">
+                <div class="form-group">
+                    <label for="person-count">記憶する人数</label>
+                    <div class="range-container">
+                        <input type="range" id="person-count" name="person-count" min="3" max="10" value="5">
+                        <span id="person-count-value">5人</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="display-time">記憶表示時間</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="display-time" value="3" id="time-3">
+                            <span>3秒</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="display-time" value="5" id="time-5">
+                            <span>5秒</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="display-time" value="10" id="time-10" checked>
+                            <span>10秒</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="primary-btn">開始</button>
+                    <button type="button" id="cancel-btn" class="secondary-btn">キャンセル</button>
+                </div>
+            </form>
+        </main>
+    </div>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const personCountInput = document.getElementById('person-count');
+        const personCountValue = document.getElementById('person-count-value');
+        const trainingForm = document.getElementById('training-form');
+        const cancelBtn = document.getElementById('cancel-btn');
+        
+        // 人数スライダーの値を表示に反映
+        personCountInput.addEventListener('input', () => {
+            personCountValue.textContent = `${personCountInput.value}人`;
+        });
+        
+        // フォーム送信処理
+        trainingForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const personCount = personCountInput.value;
+            const displayTime = document.querySelector('input[name="display-time"]:checked').value;
+            
+            // 記憶モードページへ遷移
+            window.location.href = `memory.html?count=${personCount}&time=${displayTime}`;
+        });
+        
+        // キャンセルボタン
+        cancelBtn.addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+    });
+    </script>
+</body>
+</html>
