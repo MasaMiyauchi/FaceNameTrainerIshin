@@ -84,7 +84,7 @@ class ImageGenerator {
      * @param int $seed Random seed for reproducible generations
      * @return array API response data
      */
-    private function callStabilityAPI($prompt, $seed) {
+    public function callStabilityAPI($prompt, $seed) {
         $this->lastStatusCode = null;
         $this->lastResponseTime = null;
         $this->lastAttemptCount = 0;
