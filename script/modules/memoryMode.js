@@ -133,7 +133,14 @@ function showCurrentFaceAndName() {
     updateProgress();
     
     prevButton.disabled = currentIndex === 0;
-    nextButton.disabled = currentIndex === faceNameData.length - 1;
+    
+    if (currentIndex === faceNameData.length - 1) {
+        nextButton.textContent = '終了';
+        nextButton.disabled = false;
+    } else {
+        nextButton.textContent = '次へ';
+        nextButton.disabled = false;
+    }
     
     resetTimer();
 }
